@@ -155,7 +155,7 @@ public class Server{
                 } catch (NumberFormatException e) {
                     throw new RuntimeException(e);
                 }catch (StringIndexOutOfBoundsException e){
-
+                    System.out.println("");
                 }
             }
         }
