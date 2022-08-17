@@ -54,7 +54,7 @@ public class Server{
                 int size =in.read(buffer);
 
                 if(size>0){
-                /*-------------------------------------------------------------------------------------*/
+
 
                 String req = new String(buffer, 0, size); //guarda requisição que vem quando conecta com o servidor
 
