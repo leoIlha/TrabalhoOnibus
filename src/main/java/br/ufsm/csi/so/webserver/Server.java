@@ -135,7 +135,7 @@ public class Server{
                         //System.out.println(head);
                         out.write(head.getBytes(StandardCharsets.UTF_8));
                         FileInputStream fin = new FileInputStream(file);
-                        byte[] buf_arquivo = new byte[1024];
+                        byte[] buf_arquivo = new byte[2048];
                         int read;
                         do {
                             read = fin.read(buf_arquivo);
