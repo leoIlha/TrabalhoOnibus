@@ -50,13 +50,13 @@ public class Server{
                 OutputStream out = socket.getOutputStream(); //grava os dados
 
 
-                byte[] buffer = new byte[999999999];
+                byte[] buffer = new byte[2048];
                 //int len = in.read(buffer); /* guarda o comprimento do objeto socket lido pelo buffer  */
 
-                int size = buffer.length;
+                int size =in.read(buffer);
                 /*-------------------------------------------------------------------------------------*/
 
-                String req = new String(buffer, 0, size - 1); //guarda requisição que vem quando conecta com o servidor
+                String req = new String(buffer, 0, size +1); //guarda requisição que vem quando conecta com o servidor
 
                 String[] linhas = req.split("\n");
 
@@ -135,7 +135,7 @@ public class Server{
                         //System.out.println(head);
                         out.write(head.getBytes(StandardCharsets.UTF_8));
                         FileInputStream fin = new FileInputStream(file);
-                        byte[] buf_arquivo = new byte[999999999];
+                        byte[] buf_arquivo = new byte[2048];
                         int read;
                         do {
                             read = fin.read(buf_arquivo);
