@@ -53,7 +53,7 @@ public class Server{
                 byte[] buffer = new byte[999999999];
                 //int len = in.read(buffer); /* guarda o comprimento do objeto socket lido pelo buffer  */
 
-                int size = in.read(buffer);
+                int size = buffer.length;
                 /*-------------------------------------------------------------------------------------*/
 
                 String req = new String(buffer, 0, size - 1); //guarda requisição que vem quando conecta com o servidor
