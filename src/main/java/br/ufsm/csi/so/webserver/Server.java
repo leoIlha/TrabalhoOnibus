@@ -52,6 +52,8 @@ public class Server{
                 //int len = in.read(buffer); /* guarda o comprimento do objeto socket lido pelo buffer  */
 
                 int size =in.read(buffer);
+
+                if(size>0){
                 /*-------------------------------------------------------------------------------------*/
 
                 String req = new String(buffer, 0, size); //guarda requisição que vem quando conecta com o servidor
@@ -150,7 +152,10 @@ public class Server{
                 in.close();
                 out.close();
                 socket.close();
-
+            }
+                else{
+                    System.out.println("TAMANHO vazio");
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
