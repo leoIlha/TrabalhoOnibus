@@ -154,7 +154,9 @@ public class Server{
                 socket.close();
             }
                 else{
-                    System.out.println("TAMANHO vazio");
+                    in.close();
+                    out.close();
+                    socket.close();
                 }
             }
         } catch (IOException e) {
