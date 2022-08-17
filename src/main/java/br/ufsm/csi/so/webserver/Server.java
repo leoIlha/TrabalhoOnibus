@@ -29,7 +29,7 @@ public class Server{
     private static String idPessoa;
 
     public static void main(String[] args) throws IOException {
-        try {
+
             for (int i = 1; i <= vagasDisp; i++) {
                 Poltrona p = new Poltrona();
                 p.setId(i);
@@ -42,118 +42,124 @@ public class Server{
             System.out.println("Escutando a http://localhost:8080 ...");
 
             while (true) {
-                Socket socket = serverSocket.accept();
+                try {
+                    Socket socket = serverSocket.accept();
 
-                InputStream in = socket.getInputStream(); //le os dados
+                    InputStream in = socket.getInputStream(); //le os dados
 
-                OutputStream out = socket.getOutputStream(); //grava os dados
-
-                byte[] buffer = new byte[1024];
-
-                int size = in.read(buffer);
-                /*-------------------------------------------------------------------------------------*/
-
-                String req = new String(buffer, 0, size); //guarda requisição que vem quando conecta com o servidor
-
-                String[] linhas = req.split("\n");
-
-                //     Requisição do server
-                //    pt1               pt2
-                //    [0]               [1]
-                //    metodo            recurso
-
-                String[] linha0 = linhas[0].split(" ");
-
-                String metodo = linha0[0];
-
-                String recurso = linha0[1];
-                //Metodo = GET
-                if (metodo.equals("GET")) {
-                    recurso = recurso.substring(1); //retorna uma parte da string
-                    //Feito para redirecionar para a página inicial
-                    if (recurso.isEmpty()) {
-                        recurso = "paginaInicial.jsp";
-                    }
-
-                    //     /reserva?nome=maria&pol=6&reserva=reserva
-
-                    if (recurso.startsWith("reserva")) {
-                        String[] str1 = recurso.split("[?]");
-
-                        String[] vars = str1[1].split("&");
-                        //nome=maria
-                        //
-                        // pol=6
+                    OutputStream out = socket.getOutputStream(); //grava os dados
 
 
-                        for (String v : vars) {
-                            String[] nome = v.split("=");
+                    byte[] buffer = new byte[1024];
 
-                            // /[0]nomevar  [1]=maria(valor)
+                    int size = in.read(buffer);
+                    /*-------------------------------------------------------------------------------------*/
 
-                            nomeVar = nome[0]; //recebeu "nome"
+                    String req = new String(buffer, 0, size); //guarda requisição que vem quando conecta com o servidor
 
-                            valor = nome[1]; //recebeu "maria"
+                    String[] linhas = req.split("\n");
 
-                            //If para armazenar o nome do cliente
-                            if (nomeVar.equals("nome")) {
-                                nomePessoa = valor;
+                    //     Requisição do server
+                    //    pt1               pt2
+                    //    [0]               [1]
+                    //    metodo            recurso
+
+                    String[] linha0 = linhas[0].split(" ");
+
+                    String metodo = linha0[0];
+
+                    String recurso = linha0[1];
+                    //Metodo = GET
+                    if (metodo.equals("GET")) {
+                        recurso = recurso.substring(1); //retorna uma parte da string
+                        //Feito para redirecionar para a página inicial
+                        if (recurso.isEmpty()) {
+                            recurso = "paginaInicial.jsp";
+                        }
+
+                        //     /reserva?nome=maria&pol=6&reserva=reserva
+
+                        if (recurso.startsWith("reserva")) {
+                            String[] str1 = recurso.split("[?]");
+
+                            String[] vars = str1[1].split("&");
+                            //nome=maria
+                            //
+                            // pol=6
+
+
+                            for (String v : vars) {
+                                String[] nome = v.split("=");
+
+                                // /[0]nomevar  [1]=maria(valor)
+
+                                nomeVar = nome[0]; //recebeu "nome"
+
+                                valor = nome[1]; //recebeu "maria"
+
+                                //If para armazenar o nome do cliente
+                                if (nomeVar.equals("nome")) {
+                                    nomePessoa = valor;
+                                }
+                                //If para armazenar o numero da poltrona do cliente
+                                if (nomeVar.startsWith("pol")) {
+                                    idPessoa = valor;
+                                }
                             }
-                            //If para armazenar o numero da poltrona do cliente
-                            if (nomeVar.startsWith("pol")) {
-                                idPessoa = valor;
+
+                            //Chama uma função para efetuar a reservar ou não
+                            status = reservaPoltrona(Integer.parseInt(idPessoa), nomePessoa);
+                            System.out.println(status);
+                            //Caso a reserva for concluida redirecionara o cliente para uma página apresentando uma mensagem para ele
+                            if (status.equals("Poltrona Reservada")) {
+                                recurso = "reservaFeita.jsp";
                             }
+                            //Caso a reserva não for concluida redirecionara o cliente para uma página apresentando uma mensagem para ele
+                            else {
+                                recurso = "reservaErro.jsp";
+                            }
+                        } else {
+                            recurso = "paginaInicial.jsp";
                         }
 
-                        //Chama uma função para efetuar a reservar ou não
-                        status = reservaPoltrona(Integer.parseInt(idPessoa), nomePessoa);
-                        System.out.println(status);
-                        //Caso a reserva for concluida redirecionara o cliente para uma página apresentando uma mensagem para ele
-                        if (status.equals("Poltrona Reservada")) {
-                            recurso = "reservaFeita.jsp";
-                        }
-                        //Caso a reserva não for concluida redirecionara o cliente para uma página apresentando uma mensagem para ele
-                        else {
-                            recurso = "reservaErro.jsp";
-                        }
-                    } else {
-                        recurso = "paginaInicial.jsp";
-                    }
-
-                    File file = new File("src\\main\\resources\\" + recurso);
-                    if (file.exists() && file.isFile()) {
-                        Path path = file.toPath();
-                        String mimeType = Files.probeContentType(path);
-                        String head = HEADER;
-                        if (mimeType != null) {
-                            head = HEADER.replaceAll("mime", mimeType);
-                        }
-                        //System.out.println(head);
-                        out.write(head.getBytes(StandardCharsets.UTF_8));
-                        FileInputStream fin = new FileInputStream(file);
-                        byte[] buf_arquivo = new byte[1024];
-                        int read;
-                        do {
-                            read = fin.read(buf_arquivo);
-                            if (read > 0) {
-                                out.write(buf_arquivo, 0, read);
+                        File file = new File("src\\main\\resources\\" + recurso);
+                        if (file.exists() && file.isFile()) {
+                            Path path = file.toPath();
+                            String mimeType = Files.probeContentType(path);
+                            String head = HEADER;
+                            if (mimeType != null) {
+                                head = HEADER.replaceAll("mime", mimeType);
                             }
-                        } while (read > 0);
-                        fin.close();
-                    } else {
-                        //System.out.println("recurso " + recurso + " nao encontrado.");
-                        out.write("HTTP/1.1 404 NOT FOUND\n\n".getBytes(StandardCharsets.UTF_8));
+                            //System.out.println(head);
+                            out.write(head.getBytes(StandardCharsets.UTF_8));
+                            FileInputStream fin = new FileInputStream(file);
+                            byte[] buf_arquivo = new byte[1024];
+                            int read;
+                            do {
+                                read = fin.read(buf_arquivo);
+                                if (read > 0) {
+                                    out.write(buf_arquivo, 0, read);
+                                }
+                            } while (read > 0);
+                            fin.close();
+                        } else {
+                            //System.out.println("recurso " + recurso + " nao encontrado.");
+                            out.write("HTTP/1.1 404 NOT FOUND\n\n".getBytes(StandardCharsets.UTF_8));
+                        }
                     }
+                    in.close();
+                    out.close();
+                    socket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (NumberFormatException e) {
+                    throw new RuntimeException(e);
+                }catch (StringIndexOutOfBoundsException e){
+
                 }
-                in.close();
-                out.close();
-                socket.close();
             }
         }
-        catch (StringIndexOutOfBoundsException e){
-            System.out.println("");
-        }
-    }
+
 
     public static String reservaPoltrona(int id, String nome){
         for( Poltrona p : poltronas ){
