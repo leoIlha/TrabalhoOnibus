@@ -42,7 +42,7 @@ public class Server{
             System.out.println("Escutando a http://localhost:8080 ...");
 
             while (true) {
-                try {
+
                     Socket socket = serverSocket.accept();
 
                     InputStream in = socket.getInputStream(); //le os dados
@@ -70,6 +70,7 @@ public class Server{
 
                     String recurso = linha0[1];
                     //Metodo = GET
+                try {
                     if (metodo.equals("GET")) {
                         recurso = recurso.substring(1); //retorna uma parte da string
                         //Feito para redirecionar para a página inicial
