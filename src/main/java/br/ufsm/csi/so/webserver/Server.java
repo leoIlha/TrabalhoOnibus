@@ -36,7 +36,6 @@ public class Server{
                 p.setLivre(true);
                 poltronas.add(p);
             }
-
             ServerSocket serverSocket = new ServerSocket(8080);
 
             System.out.println("Escutando a http://localhost:8080 ...");
@@ -49,14 +48,13 @@ public class Server{
 
                 OutputStream out = socket.getOutputStream(); //grava os dados
 
-
                 byte[] buffer = new byte[2048];
                 //int len = in.read(buffer); /* guarda o comprimento do objeto socket lido pelo buffer  */
 
                 int size =in.read(buffer);
                 /*-------------------------------------------------------------------------------------*/
 
-                String req = new String(buffer, 0, size +1); //guarda requisição que vem quando conecta com o servidor
+                String req = new String(buffer, 0, size); //guarda requisição que vem quando conecta com o servidor
 
                 String[] linhas = req.split("\n");
 
