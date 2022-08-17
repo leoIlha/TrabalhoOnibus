@@ -119,7 +119,7 @@ public class Server{
                     }
                 }
                 else{
-                    recurso= "paginaInicial.jsp";
+                    recurso= "paginaInicial.jsp" ;
                 }
 
                 File file = new File("src\\main\\resources\\" + recurso);
